@@ -1,26 +1,34 @@
 package main
 
 import (
-    "fmt"
-    "sync"
-    "time"
+	"fmt"
+	"sync"
+	"time"
 )
 
-func simulatedTask(taskID int, waitGroup *sync.WaitGroup) {
-    defer waitGroup.Done()
-    time.Sleep(1 * time.Second)
-    fmt.Println("Task", taskID, "finished")
+func task(number int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	fmt.Printf("Task %d started\n", number)
+
+	time.Sleep(1 * time.Second)
+
+	fmt.Printf("Task %d finished\n", number)
 }
 
 func main() {
-    start := time.Now()
-    var waitGroup sync.WaitGroup
+	startTime := time.Now()
 
-    for i := 1; i <= 5; i++ {
-        waitGroup.Add(1)
-        go simulatedTask(i, &waitGroup)
-    }
+	var wg sync.WaitGroup
 
-    waitGroup.Wait()
-    fmt.Println("Elapsed:", time.Since(start))
+	for i := 1; i <= 5; i++ {
+		wg.Add(1)
+		go task(i, &wg)
+	}
+
+	wg.Wait()
+
+	elapsed := time.Since(startTime)
+
+	fmt.Printf("Elapsed time: %.2f seconds\n", elapsed.Seconds())
 }
