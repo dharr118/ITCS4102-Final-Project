@@ -1,22 +1,30 @@
 use std::thread;
 use std::time::{Duration, Instant};
 
-fn simulated_task(task_id: u32) {
+fn task(number: i32) {
+    println!("Task {} started", number);
+
     thread::sleep(Duration::from_secs(1));
-    println!("Task {} finished", task_id);
+
+    println!("Task {} finished", number);
 }
 
 fn main() {
-    let start = Instant::now();
-    let mut handles = Vec::new();
+    let start_time = Instant::now();
 
-    for task_id in 1..=5 {
-        handles.push(thread::spawn(move || simulated_task(task_id)));
+    let mut handles = vec![];
+
+    for i in 1..=5 {
+        handles.push(thread::spawn(move || {
+            task(i);
+        }));
     }
 
     for handle in handles {
         handle.join().unwrap();
     }
 
-    println!("Elapsed: {:?}", start.elapsed());
+    let elapsed = start_time.elapsed();
+
+    println!("Elapsed time: {:.2?}", elapsed);
 }
